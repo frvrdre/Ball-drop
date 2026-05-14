@@ -152,9 +152,14 @@ export default function Portfolio() {
         <p>Throw the balls around and have fun!!</p>
       </section>
 
-      <button className="start-btn" href="https://github.com/frvrdre">
-        View Projects
-      </button>
+      <a
+    className="start-btn"
+    href="https://github.com/frvrdre"
+    target="_blank"
+    rel="noopener noreferrer"
+>
+    View Projects
+    </a>
     </main>
   );
 }
