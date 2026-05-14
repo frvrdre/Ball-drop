@@ -142,8 +142,9 @@ export default function Portfolio() {
         style={{
           position: "fixed",
           inset: 0,
-          zIndex: -1,
           pointerEvents: "auto",
+          zIndex: 0,
+          touchAction: "none"
         }}
       />
 
