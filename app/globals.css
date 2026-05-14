@@ -23,7 +23,7 @@ body {
   font-family: "Inter", sans-serif;
 }
 
-/* DO NOT use flex on body in Next.js */
+
 body {
   display: block;
 }
@@ -57,7 +57,7 @@ p {
   margin: 0;
 }
 
-/* ===== BUTTON LINK (ONLY THIS AFFECTS YOUR CTA LINK) ===== */
+/* ===== BUTTON LINK ===== */
 
 .start-btn {
   align-self: center;
