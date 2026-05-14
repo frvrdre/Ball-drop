@@ -2,8 +2,8 @@ import type { Metadata } from "next";
 import "./globals.css";
 
 export const metadata: Metadata = {
-  title: "Andres Young Portfolio",
-  description: "A portfolio website built with Next.js and Matter.js",
+  title: "Ball pit",
+  description: "a ball pit",
 };
 
 export default function RootLayout({

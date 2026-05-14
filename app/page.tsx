@@ -30,7 +30,7 @@ export default function Portfolio() {
       },
     });
 
-    // bounds
+    // ===== BOUNDS =====
     const ground = Bodies.rectangle(
       window.innerWidth / 2,
       window.innerHeight + 20,
@@ -55,76 +55,78 @@ export default function Portfolio() {
       { isStatic: true }
     );
 
-    const ceiling = Bodies.rectangle(
-      window.innerWidth / 2,
-      -20,
-      window.innerWidth,
-      40,
-      { isStatic: true }
-    );
 
-    // balls
-   const rectangle = Array.from({ length: 15 }).map(() =>
-  Bodies.rectangle(
-    100 + Math.random() * (window.innerWidth - 100),
-    100 + Math.random() * (window.innerHeight / 10),
-    20 + Math.random() * 60,
-    20 + Math.random() * 60,
-    {
-      restitution: 0.98,
-      friction: 0.1,
-      render: { fillStyle: Math.random() > 0.5 ? "#696969" : "#729E8B" },
-    }
-  )
-    );
-    // balls
-    const circles = Array.from({ length: 20 }).map(() =>
-      Bodies.circle(
+
+    // ===== RECTANGLES (spawn higher) =====
+    const rectangle = Array.from({ length: 15 }).map(() =>
+      Bodies.rectangle(
         100 + Math.random() * (window.innerWidth - 200),
-        100 + Math.random() * (window.innerHeight / 3),
-        45,
+
+        // 👇 HIGHER SPAWN (was /10, now above mid screen)
+        -100 + Math.random() * (window.innerHeight / 4),
+
+        20 + Math.random() * 60,
+        20 + Math.random() * 60,
         {
-          restitution: 1.12,
-          friction: 0,
-          render: { fillStyle: Math.random() > 0.5 ? "#696969" : "#729E8B" },
+          restitution: 0.98,
+          friction: 0.1,
+          render: {
+            fillStyle: Math.random() > 0.5 ? "#696969" : "#729E8B",
+          },
         }
       )
     );
 
-    // world
+    // ===== CIRCLES (spawn above screen) =====
+    const circles = Array.from({ length: 20 }).map(() =>
+      Bodies.circle(
+        100 + Math.random() * (window.innerWidth - 200),
+
+        // 👇 IMPORTANT CHANGE (fall in from above)
+        -100 + Math.random() * -100,
+
+        45,
+        {
+          restitution: 1.05,
+          friction: 0,
+          frictionAir: 0.0005,
+          render: {
+            fillStyle: Math.random() > 0.5 ? "#696969" : "#729E8B",
+          },
+        }
+      )
+    );
+
+    // ===== WORLD =====
     Composite.add(engine.world, [
       ground,
       leftWall,
       rightWall,
-      ceiling,
+
       ...circles,
-      ...rectangle
+      ...rectangle,
     ]);
 
-    // mouse
-     // mouse
-  const mouse = Mouse.create(render.canvas);
+    // ===== MOUSE =====
+    const mouse = Mouse.create(render.canvas);
 
-  const mouseConstraint = MouseConstraint.create(engine, {
-    mouse,
-    constraint: {
-      stiffness: 0.1,
-      render: {
-      visible: false,
+    const mouseConstraint = MouseConstraint.create(engine, {
+      mouse,
+      constraint: {
+        stiffness: 0.1,
+        render: { visible: false },
       },
-    },
-  });
+    });
 
-  Composite.add(engine.world, mouseConstraint);
+    Composite.add(engine.world, mouseConstraint);
+    render.mouse = mouse;
 
-  render.mouse = mouse;
-
-    // run
+    // ===== RUN =====
     const runner = Runner.create();
     Runner.run(runner, engine);
     Render.run(render);
 
-    // cleanup
+    // ===== CLEANUP =====
     return () => {
       Render.stop(render);
       Composite.clear(engine.world, false);
@@ -146,12 +148,11 @@ export default function Portfolio() {
       />
 
       <section className="hero">
-        <h1>Andres Young</h1>
-        <p>Throw the balls around and have fun exploring my portfolio!</p>
+        <h1>Ball Pit</h1>
+        <p>Throw the balls around and have fun!!</p>
       </section>
-            <button className="start-btn">
-               View Projects
-            </button>
+
+      <button className="start-btn">View Projects</button>
     </main>
   );
 }
