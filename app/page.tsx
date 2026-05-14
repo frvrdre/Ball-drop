@@ -1,65 +1,157 @@
-import Image from "next/image";
+"use client";
 
-export default function Home() {
+import { useEffect, useRef } from "react";
+import Matter from "matter-js";
+
+export default function Portfolio() {
+  const sceneRef = useRef<HTMLDivElement>(null);
+
+  useEffect(() => {
+    const {
+      Engine,
+      Render,
+      Runner,
+      Bodies,
+      Composite,
+      Mouse,
+      MouseConstraint,
+    } = Matter;
+
+    const engine = Engine.create();
+
+    const render = Render.create({
+      element: sceneRef.current!,
+      engine,
+      options: {
+        width: window.innerWidth,
+        height: window.innerHeight,
+        wireframes: false,
+        background: "transparent",
+      },
+    });
+
+    // bounds
+    const ground = Bodies.rectangle(
+      window.innerWidth / 2,
+      window.innerHeight + 20,
+      window.innerWidth,
+      40,
+      { isStatic: true }
+    );
+
+    const leftWall = Bodies.rectangle(
+      -20,
+      window.innerHeight / 2,
+      40,
+      window.innerHeight,
+      { isStatic: true }
+    );
+
+    const rightWall = Bodies.rectangle(
+      window.innerWidth + 20,
+      window.innerHeight / 2,
+      40,
+      window.innerHeight,
+      { isStatic: true }
+    );
+
+    const ceiling = Bodies.rectangle(
+      window.innerWidth / 2,
+      -20,
+      window.innerWidth,
+      40,
+      { isStatic: true }
+    );
+
+    // balls
+   const rectangle = Array.from({ length: 15 }).map(() =>
+  Bodies.rectangle(
+    100 + Math.random() * (window.innerWidth - 100),
+    100 + Math.random() * (window.innerHeight / 10),
+    20 + Math.random() * 60,
+    20 + Math.random() * 60,
+    {
+      restitution: 0.98,
+      friction: 0.1,
+      render: { fillStyle: Math.random() > 0.5 ? "#696969" : "#729E8B" },
+    }
+  )
+    );
+    // balls
+    const circles = Array.from({ length: 20 }).map(() =>
+      Bodies.circle(
+        100 + Math.random() * (window.innerWidth - 200),
+        100 + Math.random() * (window.innerHeight / 3),
+        45,
+        {
+          restitution: 1.12,
+          friction: 0,
+          render: { fillStyle: Math.random() > 0.5 ? "#696969" : "#729E8B" },
+        }
+      )
+    );
+
+    // world
+    Composite.add(engine.world, [
+      ground,
+      leftWall,
+      rightWall,
+      ceiling,
+      ...circles,
+      ...rectangle
+    ]);
+
+    // mouse
+     // mouse
+  const mouse = Mouse.create(render.canvas);
+
+  const mouseConstraint = MouseConstraint.create(engine, {
+    mouse,
+    constraint: {
+      stiffness: 0.1,
+      render: {
+      visible: false,
+      },
+    },
+  });
+
+  Composite.add(engine.world, mouseConstraint);
+
+  render.mouse = mouse;
+
+    // run
+    const runner = Runner.create();
+    Runner.run(runner, engine);
+    Render.run(render);
+
+    // cleanup
+    return () => {
+      Render.stop(render);
+      Composite.clear(engine.world, false);
+      Engine.clear(engine);
+      render.canvas.remove();
+    };
+  }, []);
+
   return (
-    <div className="flex flex-col flex-1 items-center justify-center bg-zinc-50 font-sans dark:bg-black">
-      <main className="flex flex-1 w-full max-w-3xl flex-col items-center justify-between py-32 px-16 bg-white dark:bg-black sm:items-start">
-        <Image
-          className="dark:invert"
-          src="/next.svg"
-          alt="Next.js logo"
-          width={100}
-          height={20}
-          priority
-        />
-        <div className="flex flex-col items-center gap-6 text-center sm:items-start sm:text-left">
-          <h1 className="max-w-xs text-3xl font-semibold leading-10 tracking-tight text-black dark:text-zinc-50">
-            To get started, edit the page.tsx file.
-          </h1>
-          <p className="max-w-md text-lg leading-8 text-zinc-600 dark:text-zinc-400">
-            Looking for a starting point or more instructions? Head over to{" "}
-            <a
-              href="https://vercel.com/templates?framework=next.js&utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-              className="font-medium text-zinc-950 dark:text-zinc-50"
-            >
-              Templates
-            </a>{" "}
-            or the{" "}
-            <a
-              href="https://nextjs.org/learn?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-              className="font-medium text-zinc-950 dark:text-zinc-50"
-            >
-              Learning
-            </a>{" "}
-            center.
-          </p>
-        </div>
-        <div className="flex flex-col gap-4 text-base font-medium sm:flex-row">
-          <a
-            className="flex h-12 w-full items-center justify-center gap-2 rounded-full bg-foreground px-5 text-background transition-colors hover:bg-[#383838] dark:hover:bg-[#ccc] md:w-[158px]"
-            href="https://vercel.com/new?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-            target="_blank"
-            rel="noopener noreferrer"
-          >
-            <Image
-              className="dark:invert"
-              src="/vercel.svg"
-              alt="Vercel logomark"
-              width={16}
-              height={16}
-            />
-            Deploy Now
-          </a>
-          <a
-            className="flex h-12 w-full items-center justify-center rounded-full border border-solid border-black/[.08] px-5 transition-colors hover:border-transparent hover:bg-black/[.04] dark:border-white/[.145] dark:hover:bg-[#1a1a1a] md:w-[158px]"
-            href="https://nextjs.org/docs?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-            target="_blank"
-            rel="noopener noreferrer"
-          >
-            Documentation
-          </a>
-        </div>
-      </main>
-    </div>
+    <main style={{ position: "relative", zIndex: 1 }}>
+      <div
+        ref={sceneRef}
+        style={{
+          position: "fixed",
+          inset: 0,
+          zIndex: -1,
+          pointerEvents: "auto",
+        }}
+      />
+
+      <section className="hero">
+        <h1>Andres Young</h1>
+        <p>Throw the balls around and have fun exploring my portfolio!</p>
+      </section>
+            <button className="start-btn">
+               View Projects
+            </button>
+    </main>
   );
 }
